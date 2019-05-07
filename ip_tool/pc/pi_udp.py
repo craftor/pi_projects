@@ -150,6 +150,7 @@ class udp_sender(object):
         注意：这里发udp包也指定了host，因为如果电脑上有多个网卡的时候，使用<broadcast>树莓派会收不到udp命令包
         """
         self.ss.sendto(cmd.encode('utf-8'), (host, self.PORT))
+        self.ss.sendto(cmd.encode('utf-8'), ('<broadcast>', self.PORT))
 
     def broadcast(self):
         """
