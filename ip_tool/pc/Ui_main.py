@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\01Git\PiTool\pc\main.ui'
+# Form implementation generated from reading ui file 'E:\01Projects\02Python\pi_projects\ip_tool\pc\main.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.2
 #

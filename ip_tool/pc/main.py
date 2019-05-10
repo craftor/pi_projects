@@ -13,9 +13,13 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QHBoxLayout, QVBoxLayout
 from PyQt5.QtWidgets import QTableWidget,QFrame,QAbstractItemView, QTableWidgetItem, QWidget
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QHeaderView
 from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from Ui_main import Ui_Dialog
+
+from TitleBar import TitleBar, FramelessWindow
 
 from pi_udp import udp_sender, udp_receiver
 
@@ -27,6 +31,15 @@ import threading
 import uuid
 
 VERSION = 3.1
+
+class CommonHelper:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def readQss(style):
+        with open(style, 'r', encoding='UTF-8') as f:
+            return f.read()
 
 # 更新ip的线程
 class RBCThread(QThread):
@@ -123,6 +136,9 @@ class Dialog(QDialog, Ui_Dialog):
         self.tableWidget.setHorizontalHeaderLabels(['mac', 'ip', 'mask', 'gateway', 'update',])#设置表头文字
         self.tableWidget.horizontalHeader().setSectionsClickable(False) #可以禁止点击表头的列
         # self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        # self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # self.tableWidget.horizontalHeader().setStretchLastSection(True)
 
     def check_pi(self, mac):
         """
@@ -159,22 +175,23 @@ class Dialog(QDialog, Ui_Dialog):
         self.tableWidget.setItem(row,2,QTableWidgetItem(ip_list[2]))
         self.tableWidget.setItem(row,3,QTableWidgetItem(ip_list[3]))
 
-        # button = QPushButton(
-        #     self.tr('更新'),
-        #     self.parent(),
-        #     clicked=lambda: self.ip_change(ip_list, row)
-        #     )
-        check = QCheckBox()
+        button = QPushButton(
+            self.tr('更新'),
+            self.parent(),
+            clicked=lambda: self.ip_change(ip_list, row)
+            )
 
-        h = QHBoxLayout()
-        h.setAlignment(Qt.AlignCenter)
-        h.addWidget(check)
-        w = QWidget()
-        w.setLayout(h)
+        # check = QCheckBox()
+
+        # h = QHBoxLayout()
+        # h.setAlignment(Qt.AlignCenter)
+        # h.addWidget(check)
+        # w = QWidget()
+        # w.setLayout(h)
         
-        self.tableWidget.setCellWidget(row, 4, check)
+        self.tableWidget.setCellWidget(row, 4, button)
         self.tableWidget.resizeRowsToContents()
-        # self.tableWidget.resizeColumnsToContents()
+        self.tableWidget.resizeColumnsToContents()
 
         self.lines.append(ip_list)
 
@@ -226,10 +243,31 @@ class Dialog(QDialog, Ui_Dialog):
                 # self.log_print("")
         self.refresh()
 
+class MainWindow(QWidget):
+    
+    def __init__(self, *args, **kwargs):
+        super(MainWindow, self).__init__(*args, **kwargs)
+        layout = QVBoxLayout(self, spacing=0)
+        layout.setContentsMargins(0, 0, 0, 0)
+        
+        self.left_tag = Dialog()
+        layout.addWidget(self.left_tag)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    main = Dialog()
-    main.show()
+    mainWnd = FramelessWindow()
+
+    styleFile = 'qss/psblack.css'
+    qssStyle = CommonHelper.readQss(styleFile)
+    mainWnd.setStyleSheet(qssStyle)
+
+    title = "PiTool v" + str(VERSION)
+    mainWnd.setWindowTitle(title)
+    icon = QtGui.QIcon()
+    icon.addPixmap(QtGui.QPixmap(":/Raspi-PGB001.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+    mainWnd.setWindowIcon(icon)
+    mainWnd.setWidget(MainWindow(mainWnd))  # 把自己的窗口添加进来
+    mainWnd.show()
+
     sys.exit(app.exec_())
     
