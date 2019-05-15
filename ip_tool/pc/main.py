@@ -135,10 +135,9 @@ class Dialog(QDialog, Ui_Dialog):
         self.tableWidget.setColumnCount(5)##设置表格一共有五列
         self.tableWidget.setHorizontalHeaderLabels(['mac', 'ip', 'mask', 'gateway', 'update',])#设置表头文字
         self.tableWidget.horizontalHeader().setSectionsClickable(False) #可以禁止点击表头的列
-        # self.tableWidget.horizontalHeader().setStretchLastSection(True)
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
         # self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        # self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
 
     def check_pi(self, mac):
         """
